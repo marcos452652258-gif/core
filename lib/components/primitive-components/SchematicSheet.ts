@@ -1,6 +1,6 @@
 import { schematicSheetProps } from "@tscircuit/props"
 import { insertSchematicElementOutsideSheetWarnings } from "lib/utils/schematic/insertSchematicElementOutsideSheetWarnings"
-import { moveSchematicSheetContentsInsideFrame } from "lib/utils/schematic/move-schematic-sheet-contents-inside-frame"
+import { moveSchematicSheetContentsInsideFrame } from "lib/utils/schematic/moveSchematicSheetContentsInsideFrame"
 import { PrimitiveComponent } from "../base-components/PrimitiveComponent"
 
 export class SchematicSheet extends PrimitiveComponent<

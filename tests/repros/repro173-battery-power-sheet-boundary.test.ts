@@ -6,7 +6,7 @@ import {
   DEFAULT_SCHEMATIC_SHEET_WIDTH,
   insertSchematicElementOutsideSheetWarnings,
 } from "lib/utils/schematic/insertSchematicElementOutsideSheetWarnings"
-import { moveSchematicSheetContentsInsideFrame } from "lib/utils/schematic/move-schematic-sheet-contents-inside-frame"
+import { moveSchematicSheetContentsInsideFrame } from "lib/utils/schematic/moveSchematicSheetContentsInsideFrame"
 import batteryPowerSheetCircuitJson from "tests/repros/assets/repro173-battery-power-sheet.json"
 import "tests/fixtures/extend-expect-circuit-snapshot"
 
