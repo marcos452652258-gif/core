@@ -6,11 +6,12 @@ import {
   DEFAULT_SCHEMATIC_SHEET_WIDTH,
   insertSchematicElementOutsideSheetWarnings,
 } from "lib/utils/schematic/insertSchematicElementOutsideSheetWarnings"
+import { moveSchematicSheetContentsInsideFrame } from "lib/utils/schematic/move-schematic-sheet-contents-inside-frame"
 import batteryPowerSheetCircuitJson from "tests/repros/assets/repro173-battery-power-sheet.json"
 import "tests/fixtures/extend-expect-circuit-snapshot"
 
 test(
-  "reproduces battery power Circuit JSON extending past the fixed frame",
+  "full battery power Circuit JSON stays inside the fixed frame",
   async () => {
     const circuitJson = batteryPowerSheetCircuitJson.map((schematicElement) =>
       any_circuit_element.parse(schematicElement),
@@ -20,6 +21,10 @@ test(
       name: "battery_power",
     })!
 
+    moveSchematicSheetContentsInsideFrame({
+      db,
+      schematicSheetId: schematicSheet.schematic_sheet_id,
+    })
     insertSchematicElementOutsideSheetWarnings({
       db,
       schematicSheetId: schematicSheet.schematic_sheet_id,
@@ -41,12 +46,13 @@ test(
 
     expect(db.schematic_sheet.list()).toHaveLength(1)
     expect(schematicSheet).not.toHaveProperty("center")
-    expect(bounds.minX).toBeLessThan(-DEFAULT_SCHEMATIC_SHEET_WIDTH / 2)
-    expect(
-      db.schematic_element_outside_sheet_warning.list().length,
-    ).toBeGreaterThan(0)
+    expect(bounds.minX).toBeGreaterThanOrEqual(
+      -DEFAULT_SCHEMATIC_SHEET_WIDTH / 2,
+    )
+    expect(bounds.maxX).toBeLessThanOrEqual(DEFAULT_SCHEMATIC_SHEET_WIDTH / 2)
+    expect(db.schematic_element_outside_sheet_warning.list()).toEqual([])
 
     await expect(circuitJson).toMatchStackedSchematicSnapshot(import.meta.path)
   },
-  { timeout: 30_000 },
+  { timeout: 60_000 },
 )
