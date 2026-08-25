@@ -38,6 +38,7 @@ test("schematic sheet links schematic elements by schSheetName", async () => {
   expect(schematicComponent).toMatchObject({
     schematic_sheet_id: schematicSheetId,
   })
+  expect(schematicSheet).not.toHaveProperty("center")
 
   await expect(circuit).toMatchSchematicSnapshot(import.meta.path)
 })

@@ -24,15 +24,16 @@ export const moveSchematicSheetContentsInsideFrame = ({
   schematicSheetId: SchematicSheetId
 }): void => {
   const schematicSheetFilter = { schematic_sheet_id: schematicSheetId }
+  const schematicRects = db.schematic_rect.list(schematicSheetFilter)
+  const schematicPaths = db.schematic_path.list(schematicSheetFilter)
+  const schematicNetLabels = db.schematic_net_label.list(schematicSheetFilter)
   const schematicElements = [
     ...db.schematic_component.list(schematicSheetFilter),
     ...db.schematic_port.list(schematicSheetFilter),
     ...db.schematic_text.list(schematicSheetFilter),
     ...db.schematic_line.list(schematicSheetFilter),
-    ...db.schematic_rect.list(schematicSheetFilter),
-    ...db.schematic_circle.list(schematicSheetFilter),
-    ...db.schematic_arc.list(schematicSheetFilter),
-    ...db.schematic_path.list(schematicSheetFilter),
+    ...schematicRects,
+    ...schematicPaths,
   ]
 
   if (schematicElements.length === 0) return
@@ -72,27 +73,25 @@ export const moveSchematicSheetContentsInsideFrame = ({
   transformSchematicElements(
     [
       ...schematicElements,
-      ...db.schematic_net_label.list(schematicSheetFilter),
+      ...schematicNetLabels,
       ...db.schematic_trace.list(schematicSheetFilter),
     ],
     schematicIntoFrameTransform,
   )
 
-  for (const element of [
-    ...db.schematic_rect.list(schematicSheetFilter),
-    ...db.schematic_circle.list(schematicSheetFilter),
-    ...db.schematic_arc.list(schematicSheetFilter),
-  ]) {
-    element.center = applyToPoint(schematicIntoFrameTransform, element.center)
+  // The shared transformer does not yet handle section rectangles or paths.
+  for (const rect of schematicRects) {
+    rect.center = applyToPoint(schematicIntoFrameTransform, rect.center)
   }
 
-  for (const path of db.schematic_path.list(schematicSheetFilter)) {
+  for (const path of schematicPaths) {
     path.points = path.points.map((point) =>
       applyToPoint(schematicIntoFrameTransform, point),
     )
   }
 
-  for (const netLabel of db.schematic_net_label.list(schematicSheetFilter)) {
+  // Keep both net-label coordinates aligned with the translated traces.
+  for (const netLabel of schematicNetLabels) {
     netLabel.center = applyToPoint(schematicIntoFrameTransform, netLabel.center)
     if (netLabel.anchor_position) {
       netLabel.anchor_position = applyToPoint(
