@@ -92,6 +92,7 @@
     "spicey": "^0.0.14",
     "stack-svgs": "^0.0.1",
     "ts-expect": "^1.3.0",
+    "tscircuit": "0.0.2375",
     "tsup": "^8.2.4"
   },
   "peerDependencies": {
